@@ -24,7 +24,7 @@ OUTPUT_FILE_WITH_DATES = os.path.join(PROJECT_ROOT, "data", "movies_with_release
 PROGRESS_FILE = os.path.join(PROJECT_ROOT, "data", "movies_processed_ids_status_filtered.txt")
 
 # Processing Parameters
-NUM_WORKERS = 10  # Adjust based on API response (429 errors)
+NUM_WORKERS = 8  # Adjust based on API response (429 errors)
 
 # --- Filtering Parameters ---
 MIN_RELEASE_YEAR = 1980         # Exclude movies released before this year

@@ -13,7 +13,7 @@ MOVIE_GENRES = [
 GENRE_COLORS_HEX = [
     '#003f5c', # Drama: Deep Blue
     '#f9a602', # Comedy: Bright Orange-Yellow
-    '#7a7a7a', # Documentary: Medium Gray
+    '#428fc9', # Documentary: Medium Gray
     '#ff7b9c', # Romance: Soft Pink
     '#ef562f', # Action: Vibrant Orange-Red
     '#2f4f4f', # Crime: Dark Slate Gray (almost black)
