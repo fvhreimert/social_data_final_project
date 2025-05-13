@@ -1,0 +1,1522 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Movies by Genre (Filtered)</title>
+    <style>
+        /* --- Minimalistic CSS (Copied from original) --- */
+        :root {
+            --bg-color: #f8f9fa; /* Very light grey */
+            --card-bg: #ffffff; /* White */
+            --text-color: #343a40; /* Dark grey */
+            --accent-color: #007bff; /* Blue accent for links/highlights */
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            --border-color: #e9ecef; /* Light border */
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --border-radius: 8px;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--text-color);
+            font-weight: 300; /* Lighter weight */
+        }
+
+        .genre-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: var(--card-bg); /* Section background slightly different */
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 10px var(--shadow-color);
+        }
+
+        .genre-title {
+            font-size: 1.8em;
+            font-weight: 400;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--accent-color);
+        }
+
+        .movies-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Responsive grid */
+            gap: 25px; /* Spacing between cards */
+        }
+
+        .movie-card {
+            background-color: var(--card-bg); /* Card background */
+            border-radius: var(--border-radius);
+            overflow: hidden; /* Keep image corners rounded */
+            box-shadow: 0 1px 4px var(--shadow-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover effect */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-5px); /* Lift card slightly */
+            box-shadow: 0 6px 15px var(--shadow-color); /* Stronger shadow */
+        }
+
+        .poster-link {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+            aspect-ratio: 2 / 3; /* Maintain poster aspect ratio */
+            background-color: #e0e0e0; /* Placeholder bg */
+            overflow: hidden; /* Ensure image stays within bounds */
+        }
+
+        .movie-card img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Cover the area, might crop */
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .poster-placeholder { /* Style for the fallback div */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            font-size: 0.9em;
+            color: #999; /* Make error text noticeable */
+            background-color: #f0f0f0; /* Different background */
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+
+        .movie-info {
+            padding: 12px;
+            flex-grow: 1; /* Allow info to take remaining space */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Push votes to bottom */
+        }
+
+        .movie-info h3 {
+            font-size: 1em;
+            font-weight: 600;
+            margin: 0 0 5px 0;
+            white-space: nowrap; /* Prevent title wrapping */
+            overflow: hidden;
+            text-overflow: ellipsis; /* Add '...' for long titles */
+        }
+
+        .year-rating {
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .rating {
+            font-weight: bold;
+            color: #e67e22; /* Orange/gold for rating */
+        }
+
+        .votes {
+            font-size: 0.8em;
+            color: #777;
+            margin-top: auto; /* Push to bottom if space allows */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Top Movies by Genre (Max {MAX_MOVIES_PER_GENRE} with Posters)</h1>
+
+    <!-- Movie sections will be inserted here -->
+
+    <section class="genre-section" id="genre-action">
+        <h2 class="genre-title">Action</h2>
+        <div class="movies-container">
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0468569/" target="_blank" class="poster-link">
+            <img src="movie_posters/qJ2tW6WMUDux911r6m7haRef0WH.jpg" alt="The Dark Knight Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Dark Knight">The Dark Knight</h3>
+            <p class="year-rating">
+                <span class="year">2008</span> | <span class="rating">★ 9.0</span>
+            </p>
+            <p class="votes">3,016,995 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt1375666/" target="_blank" class="poster-link">
+            <img src="movie_posters/ljsZTbVsrQSqZgWeep2B1QiDKuh.jpg" alt="Inception Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Inception">Inception</h3>
+            <p class="year-rating">
+                <span class="year">2010</span> | <span class="rating">★ 8.8</span>
+            </p>
+            <p class="votes">2,679,961 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0080684/" target="_blank" class="poster-link">
+            <img src="movie_posters/nNAeTmF4CtdSgMDplXTDPOpYzsX.jpg" alt="Star Wars: Episode V - The Empire Strikes Back Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Star Wars: Episode V - The Empire Strikes Back">Star Wars: Episode V - The Empire Strikes Back</h3>
+            <p class="year-rating">
+                <span class="year">1980</span> | <span class="rating">★ 8.7</span>
+            </p>
+            <p class="votes">1,439,551 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0133093/" target="_blank" class="poster-link">
+            <img src="movie_posters/dXNAPwY7VrqMAo51EKhhCJfaGb5.jpg" alt="The Matrix Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Matrix">The Matrix</h3>
+            <p class="year-rating">
+                <span class="year">1999</span> | <span class="rating">★ 8.7</span>
+            </p>
+            <p class="votes">2,153,140 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0047478/" target="_blank" class="poster-link">
+            <img src="movie_posters/8OKmBV5BUFzmozIC3pPWKHy17kx.jpg" alt="Seven Samurai Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Seven Samurai">Seven Samurai</h3>
+            <p class="year-rating">
+                <span class="year">1954</span> | <span class="rating">★ 8.6</span>
+            </p>
+            <p class="votes">383,592 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0076759/" target="_blank" class="poster-link">
+            <img src="movie_posters/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg" alt="Star Wars: Episode IV - A New Hope Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Star Wars: Episode IV - A New Hope">Star Wars: Episode IV - A New Hope</h3>
+            <p class="year-rating">
+                <span class="year">1977</span> | <span class="rating">★ 8.6</span>
+            </p>
+            <p class="votes">1,506,370 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0103064/" target="_blank" class="poster-link">
+            <img src="movie_posters/5M0j0B18abtBI5gi2RhfjjurTqb.jpg" alt="Terminator 2: Judgment Day Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Terminator 2: Judgment Day">Terminator 2: Judgment Day</h3>
+            <p class="year-rating">
+                <span class="year">1991</span> | <span class="rating">★ 8.6</span>
+            </p>
+            <p class="votes">1,231,396 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0110413/" target="_blank" class="poster-link">
+            <img src="movie_posters/yI6X2cCM5YPJtxMhUd3dPGqDAhw.jpg" alt="Léon: The Professional Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Léon: The Professional">Léon: The Professional</h3>
+            <p class="year-rating">
+                <span class="year">1994</span> | <span class="rating">★ 8.5</span>
+            </p>
+            <p class="votes">1,301,480 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0172495/" target="_blank" class="poster-link">
+            <img src="movie_posters/ty8TGRuvJLPUmAR1H1nRIsgwvim.jpg" alt="Gladiator Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Gladiator">Gladiator</h3>
+            <p class="year-rating">
+                <span class="year">2000</span> | <span class="rating">★ 8.5</span>
+            </p>
+            <p class="votes">1,757,208 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt15239678/" target="_blank" class="poster-link">
+            <img src="movie_posters/6izwz7rsy95ARzTR3poZ8H6c5pp.jpg" alt="Dune: Part Two Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Dune: Part Two">Dune: Part Two</h3>
+            <p class="year-rating">
+                <span class="year">2024</span> | <span class="rating">★ 8.5</span>
+            </p>
+            <p class="votes">627,879 votes</p>
+        </div>
+    </div>
+    
+        </div>
+    </section>
+    
+    <section class="genre-section" id="genre-adventure">
+        <h2 class="genre-title">Adventure</h2>
+        <div class="movies-container">
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0167260/" target="_blank" class="poster-link">
+            <img src="movie_posters/rCzpDGLbOoPwLjy3OAm5NUPOTrC.jpg" alt="The Lord of the Rings: The Return of the King Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Lord of the Rings: The Return of the King">The Lord of the Rings: The Return of the King</h3>
+            <p class="year-rating">
+                <span class="year">2003</span> | <span class="rating">★ 9.0</span>
+            </p>
+            <p class="votes">2,075,645 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0120737/" target="_blank" class="poster-link">
+            <img src="movie_posters/6oom5QYQ2yQTMJIbnvbkBL9cHo6.jpg" alt="The Lord of the Rings: The Fellowship of the Ring Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Lord of the Rings: The Fellowship of the Ring">The Lord of the Rings: The Fellowship of the Ring</h3>
+            <p class="year-rating">
+                <span class="year">2001</span> | <span class="rating">★ 8.9</span>
+            </p>
+            <p class="votes">2,105,491 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0060196/" target="_blank" class="poster-link">
+            <img src="movie_posters/bX2xnavhMYjWDoZp1VM6VnU1xwe.jpg" alt="The Good, the Bad and the Ugly Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Good, the Bad and the Ugly">The Good, the Bad and the Ugly</h3>
+            <p class="year-rating">
+                <span class="year">1966</span> | <span class="rating">★ 8.8</span>
+            </p>
+            <p class="votes">852,036 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0167261/" target="_blank" class="poster-link">
+            <img src="movie_posters/5VTN0pR8gcqV3EPUHHfMGnJYN9L.jpg" alt="The Lord of the Rings: The Two Towers Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Lord of the Rings: The Two Towers">The Lord of the Rings: The Two Towers</h3>
+            <p class="year-rating">
+                <span class="year">2002</span> | <span class="rating">★ 8.8</span>
+            </p>
+            <p class="votes">1,871,433 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt1375666/" target="_blank" class="poster-link">
+            <img src="movie_posters/ljsZTbVsrQSqZgWeep2B1QiDKuh.jpg" alt="Inception Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Inception">Inception</h3>
+            <p class="year-rating">
+                <span class="year">2010</span> | <span class="rating">★ 8.8</span>
+            </p>
+            <p class="votes">2,679,961 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0080684/" target="_blank" class="poster-link">
+            <img src="movie_posters/nNAeTmF4CtdSgMDplXTDPOpYzsX.jpg" alt="Star Wars: Episode V - The Empire Strikes Back Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Star Wars: Episode V - The Empire Strikes Back">Star Wars: Episode V - The Empire Strikes Back</h3>
+            <p class="year-rating">
+                <span class="year">1980</span> | <span class="rating">★ 8.7</span>
+            </p>
+            <p class="votes">1,439,551 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0816692/" target="_blank" class="poster-link">
+            <img src="movie_posters/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg" alt="Interstellar Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Interstellar">Interstellar</h3>
+            <p class="year-rating">
+                <span class="year">2014</span> | <span class="rating">★ 8.7</span>
+            </p>
+            <p class="votes">2,340,745 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt7466810/" target="_blank" class="poster-link">
+            <img src="movie_posters/qArPmXH0aWsT3SEtYl8XrU2Oz48.jpg" alt="777 Charlie Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="777 Charlie">777 Charlie</h3>
+            <p class="year-rating">
+                <span class="year">2022</span> | <span class="rating">★ 8.7</span>
+            </p>
+            <p class="votes">43,099 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0076759/" target="_blank" class="poster-link">
+            <img src="movie_posters/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg" alt="Star Wars: Episode IV - A New Hope Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Star Wars: Episode IV - A New Hope">Star Wars: Episode IV - A New Hope</h3>
+            <p class="year-rating">
+                <span class="year">1977</span> | <span class="rating">★ 8.6</span>
+            </p>
+            <p class="votes">1,506,370 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0103064/" target="_blank" class="poster-link">
+            <img src="movie_posters/5M0j0B18abtBI5gi2RhfjjurTqb.jpg" alt="Terminator 2: Judgment Day Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Terminator 2: Judgment Day">Terminator 2: Judgment Day</h3>
+            <p class="year-rating">
+                <span class="year">1991</span> | <span class="rating">★ 8.6</span>
+            </p>
+            <p class="votes">1,231,396 votes</p>
+        </div>
+    </div>
+    
+        </div>
+    </section>
+    
+    <section class="genre-section" id="genre-comedy">
+        <h2 class="genre-title">Comedy</h2>
+        <div class="movies-container">
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0252487/" target="_blank" class="poster-link">
+            <img src="movie_posters/t2xLuEeZhy4uyiWIFT9D4mmyEA8.jpg" alt="The Chaos Class Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Chaos Class">The Chaos Class</h3>
+            <p class="year-rating">
+                <span class="year">1975</span> | <span class="rating">★ 9.2</span>
+            </p>
+            <p class="votes">44,445 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt7466810/" target="_blank" class="poster-link">
+            <img src="movie_posters/qArPmXH0aWsT3SEtYl8XrU2Oz48.jpg" alt="777 Charlie Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="777 Charlie">777 Charlie</h3>
+            <p class="year-rating">
+                <span class="year">2022</span> | <span class="rating">★ 8.7</span>
+            </p>
+            <p class="votes">43,099 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0118799/" target="_blank" class="poster-link">
+            <img src="movie_posters/74hLDKjD5aGYOotO6esUVaeISa2.jpg" alt="Life Is Beautiful Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Life Is Beautiful">Life Is Beautiful</h3>
+            <p class="year-rating">
+                <span class="year">1997</span> | <span class="rating">★ 8.6</span>
+            </p>
+            <p class="votes">777,414 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0021749/" target="_blank" class="poster-link">
+            <img src="movie_posters/ugmakEL5y294I5bXgiBqApuZpwc.jpg" alt="City Lights Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="City Lights">City Lights</h3>
+            <p class="year-rating">
+                <span class="year">1931</span> | <span class="rating">★ 8.5</span>
+            </p>
+            <p class="votes">206,785 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0027977/" target="_blank" class="poster-link">
+            <img src="movie_posters/7uoiKOEjxBBW0AgDGQWrlfGQ90w.jpg" alt="Modern Times Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Modern Times">Modern Times</h3>
+            <p class="year-rating">
+                <span class="year">1936</span> | <span class="rating">★ 8.5</span>
+            </p>
+            <p class="votes">272,647 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0088763/" target="_blank" class="poster-link">
+            <img src="movie_posters/vN5B5WgYscRGcQpVhHl6p9DDTP0.jpg" alt="Back to the Future Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Back to the Future">Back to the Future</h3>
+            <p class="year-rating">
+                <span class="year">1985</span> | <span class="rating">★ 8.5</span>
+            </p>
+            <p class="votes">1,376,010 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt1675434/" target="_blank" class="poster-link">
+            <img src="movie_posters/1QU7HKgsQbGpzsJbJK4pAVQV9F5.jpg" alt="The Intouchables Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Intouchables">The Intouchables</h3>
+            <p class="year-rating">
+                <span class="year">2011</span> | <span class="rating">★ 8.5</span>
+            </p>
+            <p class="votes">977,132 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0032553/" target="_blank" class="poster-link">
+            <img src="movie_posters/nhMXB8GTdswYMCL9nepDZymJCOr.jpg" alt="The Great Dictator Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Great Dictator">The Great Dictator</h3>
+            <p class="year-rating">
+                <span class="year">1940</span> | <span class="rating">★ 8.4</span>
+            </p>
+            <p class="votes">248,579 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt1187043/" target="_blank" class="poster-link">
+            <img src="movie_posters/66A9MqXOyVFCssoloscw79z8Tew.jpg" alt="3 Idiots Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="3 Idiots">3 Idiots</h3>
+            <p class="year-rating">
+                <span class="year">2009</span> | <span class="rating">★ 8.4</span>
+            </p>
+            <p class="votes">457,959 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0045152/" target="_blank" class="poster-link">
+            <img src="movie_posters/w03EiJVHP8Un77boQeE7hg9DVdU.jpg" alt="Singin' in the Rain Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Singin' in the Rain">Singin' in the Rain</h3>
+            <p class="year-rating">
+                <span class="year">1952</span> | <span class="rating">★ 8.3</span>
+            </p>
+            <p class="votes">272,324 votes</p>
+        </div>
+    </div>
+    
+        </div>
+    </section>
+    
+    <section class="genre-section" id="genre-crime">
+        <h2 class="genre-title">Crime</h2>
+        <div class="movies-container">
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0068646/" target="_blank" class="poster-link">
+            <img src="movie_posters/3bhkrj58Vtu7enYsRolD1fZdja1.jpg" alt="The Godfather Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Godfather">The Godfather</h3>
+            <p class="year-rating">
+                <span class="year">1972</span> | <span class="rating">★ 9.2</span>
+            </p>
+            <p class="votes">2,122,163 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0050083/" target="_blank" class="poster-link">
+            <img src="movie_posters/ow3wq89wM8qd5X7hWKxiRfsFf9C.jpg" alt="12 Angry Men Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="12 Angry Men">12 Angry Men</h3>
+            <p class="year-rating">
+                <span class="year">1957</span> | <span class="rating">★ 9.0</span>
+            </p>
+            <p class="votes">923,749 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0071562/" target="_blank" class="poster-link">
+            <img src="movie_posters/hek3koDUyRQk7FIhPXsa6mT2Zc3.jpg" alt="The Godfather Part II Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Godfather Part II">The Godfather Part II</h3>
+            <p class="year-rating">
+                <span class="year">1974</span> | <span class="rating">★ 9.0</span>
+            </p>
+            <p class="votes">1,427,702 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0468569/" target="_blank" class="poster-link">
+            <img src="movie_posters/qJ2tW6WMUDux911r6m7haRef0WH.jpg" alt="The Dark Knight Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Dark Knight">The Dark Knight</h3>
+            <p class="year-rating">
+                <span class="year">2008</span> | <span class="rating">★ 9.0</span>
+            </p>
+            <p class="votes">3,016,995 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0110912/" target="_blank" class="poster-link">
+            <img src="movie_posters/vQWk5YBFWF4bZaofAbv0tShwBvQ.jpg" alt="Pulp Fiction Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Pulp Fiction">Pulp Fiction</h3>
+            <p class="year-rating">
+                <span class="year">1994</span> | <span class="rating">★ 8.9</span>
+            </p>
+            <p class="votes">2,332,241 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt5354160/" target="_blank" class="poster-link">
+            <img src="movie_posters/1Cz5Q7PH2JklNV7OzMkTenPGrEf.jpg" alt="Mirror Game Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Mirror Game">Mirror Game</h3>
+            <p class="year-rating">
+                <span class="year">2016</span> | <span class="rating">★ 8.9</span>
+            </p>
+            <p class="votes">30,451 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0137523/" target="_blank" class="poster-link">
+            <img src="movie_posters/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg" alt="Fight Club Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Fight Club">Fight Club</h3>
+            <p class="year-rating">
+                <span class="year">1999</span> | <span class="rating">★ 8.8</span>
+            </p>
+            <p class="votes">2,461,562 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0099685/" target="_blank" class="poster-link">
+            <img src="movie_posters/aKuFiU82s5ISJpGZp7YkIr3kCUd.jpg" alt="Goodfellas Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Goodfellas">Goodfellas</h3>
+            <p class="year-rating">
+                <span class="year">1990</span> | <span class="rating">★ 8.7</span>
+            </p>
+            <p class="votes">1,324,048 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt15097216/" target="_blank" class="poster-link">
+            <img src="movie_posters/ehybiOtBUtrMkmtB39zQEtq1Jie.jpg" alt="Jai Bhim Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Jai Bhim">Jai Bhim</h3>
+            <p class="year-rating">
+                <span class="year">2021</span> | <span class="rating">★ 8.7</span>
+            </p>
+            <p class="votes">225,426 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0102926/" target="_blank" class="poster-link">
+            <img src="movie_posters/uS9m8OBk1A8eM9I042bx8XXpqAq.jpg" alt="The Silence of the Lambs Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Silence of the Lambs">The Silence of the Lambs</h3>
+            <p class="year-rating">
+                <span class="year">1991</span> | <span class="rating">★ 8.6</span>
+            </p>
+            <p class="votes">1,633,094 votes</p>
+        </div>
+    </div>
+    
+        </div>
+    </section>
+    
+    <section class="genre-section" id="genre-documentary">
+        <h2 class="genre-title">Documentary</h2>
+        <div class="movies-container">
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0103767/" target="_blank" class="poster-link">
+            <img src="movie_posters/ldEuJQ4z7zEvL7iXraESWBUfQcz.jpg" alt="Baraka Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Baraka">Baraka</h3>
+            <p class="year-rating">
+                <span class="year">1992</span> | <span class="rating">★ 8.5</span>
+            </p>
+            <p class="votes">42,091 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt1152758/" target="_blank" class="poster-link">
+            <img src="movie_posters/bVJCQfIfNC01CYOVkvBOtrY1cxy.jpg" alt="Dear Zachary: A Letter to a Son About His Father Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Dear Zachary: A Letter to a Son About His Father">Dear Zachary: A Letter to a Son About His Father</h3>
+            <p class="year-rating">
+                <span class="year">2008</span> | <span class="rating">★ 8.5</span>
+            </p>
+            <p class="votes">43,138 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt1424432/" target="_blank" class="poster-link">
+            <img src="movie_posters/nZbLCbRoP6iJq5sr8daHQzjnzFh.jpg" alt="Senna Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Senna">Senna</h3>
+            <p class="year-rating">
+                <span class="year">2010</span> | <span class="rating">★ 8.5</span>
+            </p>
+            <p class="votes">80,591 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0770802/" target="_blank" class="poster-link">
+            <img src="movie_posters/qodkea4k0pNUmNTl5TJO2PdTqgW.jpg" alt="Samsara Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Samsara">Samsara</h3>
+            <p class="year-rating">
+                <span class="year">2011</span> | <span class="rating">★ 8.4</span>
+            </p>
+            <p class="votes">39,029 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt1313104/" target="_blank" class="poster-link">
+            <img src="movie_posters/miodcVtQv2YxpKjjHJWcV0EDfSP.jpg" alt="The Cove Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Cove">The Cove</h3>
+            <p class="year-rating">
+                <span class="year">2009</span> | <span class="rating">★ 8.4</span>
+            </p>
+            <p class="votes">52,329 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt1645089/" target="_blank" class="poster-link">
+            <img src="movie_posters/7yXXIWec24htucjsZS1sDuPLqw8.jpg" alt="Inside Job Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Inside Job">Inside Job</h3>
+            <p class="year-rating">
+                <span class="year">2010</span> | <span class="rating">★ 8.2</span>
+            </p>
+            <p class="votes">81,212 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt2125608/" target="_blank" class="poster-link">
+            <img src="movie_posters/ucM98HuBHSWmn44oiE83hIDc6VB.jpg" alt="Searching for Sugar Man Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Searching for Sugar Man">Searching for Sugar Man</h3>
+            <p class="year-rating">
+                <span class="year">2012</span> | <span class="rating">★ 8.2</span>
+            </p>
+            <p class="votes">74,714 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt2375605/" target="_blank" class="poster-link">
+            <img src="movie_posters/sp5B7Tz5ttsgOLnIlCP5uEhtesI.jpg" alt="The Act of Killing Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Act of Killing">The Act of Killing</h3>
+            <p class="year-rating">
+                <span class="year">2012</span> | <span class="rating">★ 8.2</span>
+            </p>
+            <p class="votes">42,357 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt5895028/" target="_blank" class="poster-link">
+            <img src="movie_posters/tcKNWD6IFPPsvkpvyZ548naz0is.jpg" alt="13th Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="13th">13th</h3>
+            <p class="year-rating">
+                <span class="year">2016</span> | <span class="rating">★ 8.2</span>
+            </p>
+            <p class="votes">38,519 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt7905466/" target="_blank" class="poster-link">
+            <img src="movie_posters/yMGfJeTXUdIjOqjS0jJfjgYEuYC.jpg" alt="They Shall Not Grow Old Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="They Shall Not Grow Old">They Shall Not Grow Old</h3>
+            <p class="year-rating">
+                <span class="year">2018</span> | <span class="rating">★ 8.2</span>
+            </p>
+            <p class="votes">39,671 votes</p>
+        </div>
+    </div>
+    
+        </div>
+    </section>
+    
+    <section class="genre-section" id="genre-drama">
+        <h2 class="genre-title">Drama</h2>
+        <div class="movies-container">
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0111161/" target="_blank" class="poster-link">
+            <img src="movie_posters/9cqNxx0GxF0bflZmeSMuL5tnGzr.jpg" alt="The Shawshank Redemption Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Shawshank Redemption">The Shawshank Redemption</h3>
+            <p class="year-rating">
+                <span class="year">1994</span> | <span class="rating">★ 9.3</span>
+            </p>
+            <p class="votes">3,040,199 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0068646/" target="_blank" class="poster-link">
+            <img src="movie_posters/3bhkrj58Vtu7enYsRolD1fZdja1.jpg" alt="The Godfather Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Godfather">The Godfather</h3>
+            <p class="year-rating">
+                <span class="year">1972</span> | <span class="rating">★ 9.2</span>
+            </p>
+            <p class="votes">2,122,163 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0050083/" target="_blank" class="poster-link">
+            <img src="movie_posters/ow3wq89wM8qd5X7hWKxiRfsFf9C.jpg" alt="12 Angry Men Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="12 Angry Men">12 Angry Men</h3>
+            <p class="year-rating">
+                <span class="year">1957</span> | <span class="rating">★ 9.0</span>
+            </p>
+            <p class="votes">923,749 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0071562/" target="_blank" class="poster-link">
+            <img src="movie_posters/hek3koDUyRQk7FIhPXsa6mT2Zc3.jpg" alt="The Godfather Part II Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Godfather Part II">The Godfather Part II</h3>
+            <p class="year-rating">
+                <span class="year">1974</span> | <span class="rating">★ 9.0</span>
+            </p>
+            <p class="votes">1,427,702 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0108052/" target="_blank" class="poster-link">
+            <img src="movie_posters/sF1U4EUQS8YHUYjNl3pMGNIQyr0.jpg" alt="Schindler's List Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Schindler's List">Schindler's List</h3>
+            <p class="year-rating">
+                <span class="year">1993</span> | <span class="rating">★ 9.0</span>
+            </p>
+            <p class="votes">1,520,746 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0167260/" target="_blank" class="poster-link">
+            <img src="movie_posters/rCzpDGLbOoPwLjy3OAm5NUPOTrC.jpg" alt="The Lord of the Rings: The Return of the King Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Lord of the Rings: The Return of the King">The Lord of the Rings: The Return of the King</h3>
+            <p class="year-rating">
+                <span class="year">2003</span> | <span class="rating">★ 9.0</span>
+            </p>
+            <p class="votes">2,075,645 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0468569/" target="_blank" class="poster-link">
+            <img src="movie_posters/qJ2tW6WMUDux911r6m7haRef0WH.jpg" alt="The Dark Knight Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Dark Knight">The Dark Knight</h3>
+            <p class="year-rating">
+                <span class="year">2008</span> | <span class="rating">★ 9.0</span>
+            </p>
+            <p class="votes">3,016,995 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0110912/" target="_blank" class="poster-link">
+            <img src="movie_posters/vQWk5YBFWF4bZaofAbv0tShwBvQ.jpg" alt="Pulp Fiction Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Pulp Fiction">Pulp Fiction</h3>
+            <p class="year-rating">
+                <span class="year">1994</span> | <span class="rating">★ 8.9</span>
+            </p>
+            <p class="votes">2,332,241 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0120737/" target="_blank" class="poster-link">
+            <img src="movie_posters/6oom5QYQ2yQTMJIbnvbkBL9cHo6.jpg" alt="The Lord of the Rings: The Fellowship of the Ring Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Lord of the Rings: The Fellowship of the Ring">The Lord of the Rings: The Fellowship of the Ring</h3>
+            <p class="year-rating">
+                <span class="year">2001</span> | <span class="rating">★ 8.9</span>
+            </p>
+            <p class="votes">2,105,491 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0109830/" target="_blank" class="poster-link">
+            <img src="movie_posters/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg" alt="Forrest Gump Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Forrest Gump">Forrest Gump</h3>
+            <p class="year-rating">
+                <span class="year">1994</span> | <span class="rating">★ 8.8</span>
+            </p>
+            <p class="votes">2,376,341 votes</p>
+        </div>
+    </div>
+    
+        </div>
+    </section>
+    
+    <section class="genre-section" id="genre-horror">
+        <h2 class="genre-title">Horror</h2>
+        <div class="movies-container">
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0102926/" target="_blank" class="poster-link">
+            <img src="movie_posters/uS9m8OBk1A8eM9I042bx8XXpqAq.jpg" alt="The Silence of the Lambs Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Silence of the Lambs">The Silence of the Lambs</h3>
+            <p class="year-rating">
+                <span class="year">1991</span> | <span class="rating">★ 8.6</span>
+            </p>
+            <p class="votes">1,633,094 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0054215/" target="_blank" class="poster-link">
+            <img src="movie_posters/yz4QVqPx3h1hD1DfqqQkCq3rmxW.jpg" alt="Psycho Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Psycho">Psycho</h3>
+            <p class="year-rating">
+                <span class="year">1960</span> | <span class="rating">★ 8.5</span>
+            </p>
+            <p class="votes">751,809 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0078748/" target="_blank" class="poster-link">
+            <img src="movie_posters/vfrQk5IPloGg1v9Rzbh2Eg3VGyM.jpg" alt="Alien Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Alien">Alien</h3>
+            <p class="year-rating">
+                <span class="year">1979</span> | <span class="rating">★ 8.5</span>
+            </p>
+            <p class="votes">1,014,865 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0081505/" target="_blank" class="poster-link">
+            <img src="movie_posters/xazWoLealQwEgqZ89MLZklLZD3k.jpg" alt="The Shining Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Shining">The Shining</h3>
+            <p class="year-rating">
+                <span class="year">1980</span> | <span class="rating">★ 8.4</span>
+            </p>
+            <p class="votes">1,165,413 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0090605/" target="_blank" class="poster-link">
+            <img src="movie_posters/r1x5JGpyqZU8PYhbs4UcrO1Xb6x.jpg" alt="Aliens Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Aliens">Aliens</h3>
+            <p class="year-rating">
+                <span class="year">1986</span> | <span class="rating">★ 8.4</span>
+            </p>
+            <p class="votes">808,077 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0084787/" target="_blank" class="poster-link">
+            <img src="movie_posters/tzGY49kseSE9QAKk47uuDGwnSCu.jpg" alt="The Thing Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Thing">The Thing</h3>
+            <p class="year-rating">
+                <span class="year">1982</span> | <span class="rating">★ 8.2</span>
+            </p>
+            <p class="votes">497,866 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt8239946/" target="_blank" class="poster-link">
+            <img src="movie_posters/6qeRFImDskoIRkSCFatqeM2rM3k.jpg" alt="Tumbbad Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Tumbbad">Tumbbad</h3>
+            <p class="year-rating">
+                <span class="year">2018</span> | <span class="rating">★ 8.2</span>
+            </p>
+            <p class="votes">68,182 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0046911/" target="_blank" class="poster-link">
+            <img src="movie_posters/jE8ygUYBUGyUcM4sR6iinPqYeDK.jpg" alt="Diabolique Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Diabolique">Diabolique</h3>
+            <p class="year-rating">
+                <span class="year">1955</span> | <span class="rating">★ 8.1</span>
+            </p>
+            <p class="votes">71,450 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0070047/" target="_blank" class="poster-link">
+            <img src="movie_posters/5x0CeVHJI8tcDx8tUUwYHQSNILq.jpg" alt="The Exorcist Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Exorcist">The Exorcist</h3>
+            <p class="year-rating">
+                <span class="year">1973</span> | <span class="rating">★ 8.1</span>
+            </p>
+            <p class="votes">477,285 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0073195/" target="_blank" class="poster-link">
+            <img src="movie_posters/lxM6kqilAdpdhqUl2biYp5frUxE.jpg" alt="Jaws Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Jaws">Jaws</h3>
+            <p class="year-rating">
+                <span class="year">1975</span> | <span class="rating">★ 8.1</span>
+            </p>
+            <p class="votes">693,632 votes</p>
+        </div>
+    </div>
+    
+        </div>
+    </section>
+    
+    <section class="genre-section" id="genre-mystery">
+        <h2 class="genre-title">Mystery</h2>
+        <div class="movies-container">
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt5354160/" target="_blank" class="poster-link">
+            <img src="movie_posters/1Cz5Q7PH2JklNV7OzMkTenPGrEf.jpg" alt="Mirror Game Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Mirror Game">Mirror Game</h3>
+            <p class="year-rating">
+                <span class="year">2016</span> | <span class="rating">★ 8.9</span>
+            </p>
+            <p class="votes">30,451 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0056058/" target="_blank" class="poster-link">
+            <img src="movie_posters/5konZnIbcAxZjP616Cz5o9bKEfW.jpg" alt="Harakiri Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Harakiri">Harakiri</h3>
+            <p class="year-rating">
+                <span class="year">1962</span> | <span class="rating">★ 8.6</span>
+            </p>
+            <p class="votes">79,417 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0114369/" target="_blank" class="poster-link">
+            <img src="movie_posters/191nKfP0ehp3uIvWqgPbFmI4lv9.jpg" alt="Se7en Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Se7en">Se7en</h3>
+            <p class="year-rating">
+                <span class="year">1995</span> | <span class="rating">★ 8.6</span>
+            </p>
+            <p class="votes">1,908,640 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0047396/" target="_blank" class="poster-link">
+            <img src="movie_posters/ILVF0eJxHMddjxeQhswFtpMtqx.jpg" alt="Rear Window Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Rear Window">Rear Window</h3>
+            <p class="year-rating">
+                <span class="year">1954</span> | <span class="rating">★ 8.5</span>
+            </p>
+            <p class="votes">545,641 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0054215/" target="_blank" class="poster-link">
+            <img src="movie_posters/yz4QVqPx3h1hD1DfqqQkCq3rmxW.jpg" alt="Psycho Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Psycho">Psycho</h3>
+            <p class="year-rating">
+                <span class="year">1960</span> | <span class="rating">★ 8.5</span>
+            </p>
+            <p class="votes">751,809 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0114814/" target="_blank" class="poster-link">
+            <img src="movie_posters/rWbsxdwF9qQzpTPCLmDfVnVqTK1.jpg" alt="The Usual Suspects Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Usual Suspects">The Usual Suspects</h3>
+            <p class="year-rating">
+                <span class="year">1995</span> | <span class="rating">★ 8.5</span>
+            </p>
+            <p class="votes">1,188,740 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0482571/" target="_blank" class="poster-link">
+            <img src="movie_posters/bdN3gXuIZYaJP7ftKK2sU0nPtEA.jpg" alt="The Prestige Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Prestige">The Prestige</h3>
+            <p class="year-rating">
+                <span class="year">2006</span> | <span class="rating">★ 8.5</span>
+            </p>
+            <p class="votes">1,512,950 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt20850406/" target="_blank" class="poster-link">
+            <img src="movie_posters/g3hk2wEeIsTGhh7JvK8yWFVR7ue.jpg" alt="Sita Ramam Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Sita Ramam">Sita Ramam</h3>
+            <p class="year-rating">
+                <span class="year">2022</span> | <span class="rating">★ 8.5</span>
+            </p>
+            <p class="votes">75,354 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0051201/" target="_blank" class="poster-link">
+            <img src="movie_posters/bCj4EfuehAlgBwVd3diyWyhuuau.jpg" alt="Witness for the Prosecution Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Witness for the Prosecution">Witness for the Prosecution</h3>
+            <p class="year-rating">
+                <span class="year">1957</span> | <span class="rating">★ 8.4</span>
+            </p>
+            <p class="votes">149,750 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0057565/" target="_blank" class="poster-link">
+            <img src="movie_posters/tgNjemQPG96uIezpiUiXFcer5ga.jpg" alt="High and Low Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="High and Low">High and Low</h3>
+            <p class="year-rating">
+                <span class="year">1963</span> | <span class="rating">★ 8.4</span>
+            </p>
+            <p class="votes">60,031 votes</p>
+        </div>
+    </div>
+    
+        </div>
+    </section>
+    
+    <section class="genre-section" id="genre-romance">
+        <h2 class="genre-title">Romance</h2>
+        <div class="movies-container">
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0109830/" target="_blank" class="poster-link">
+            <img src="movie_posters/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg" alt="Forrest Gump Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Forrest Gump">Forrest Gump</h3>
+            <p class="year-rating">
+                <span class="year">1994</span> | <span class="rating">★ 8.8</span>
+            </p>
+            <p class="votes">2,376,341 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0118799/" target="_blank" class="poster-link">
+            <img src="movie_posters/74hLDKjD5aGYOotO6esUVaeISa2.jpg" alt="Life Is Beautiful Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Life Is Beautiful">Life Is Beautiful</h3>
+            <p class="year-rating">
+                <span class="year">1997</span> | <span class="rating">★ 8.6</span>
+            </p>
+            <p class="votes">777,414 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0021749/" target="_blank" class="poster-link">
+            <img src="movie_posters/ugmakEL5y294I5bXgiBqApuZpwc.jpg" alt="City Lights Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="City Lights">City Lights</h3>
+            <p class="year-rating">
+                <span class="year">1931</span> | <span class="rating">★ 8.5</span>
+            </p>
+            <p class="votes">206,785 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0027977/" target="_blank" class="poster-link">
+            <img src="movie_posters/7uoiKOEjxBBW0AgDGQWrlfGQ90w.jpg" alt="Modern Times Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Modern Times">Modern Times</h3>
+            <p class="year-rating">
+                <span class="year">1936</span> | <span class="rating">★ 8.5</span>
+            </p>
+            <p class="votes">272,647 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0095765/" target="_blank" class="poster-link">
+            <img src="movie_posters/gCI2AeMV4IHSewhJkzsur5MEp6R.jpg" alt="Cinema Paradiso Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Cinema Paradiso">Cinema Paradiso</h3>
+            <p class="year-rating">
+                <span class="year">1988</span> | <span class="rating">★ 8.5</span>
+            </p>
+            <p class="votes">300,956 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt7019842/" target="_blank" class="poster-link">
+            <img src="movie_posters/nrVloCa2hCFOztRF1DZU2jnWIiQ.jpg" alt="96 Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="96">96</h3>
+            <p class="year-rating">
+                <span class="year">2018</span> | <span class="rating">★ 8.5</span>
+            </p>
+            <p class="votes">41,250 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0045152/" target="_blank" class="poster-link">
+            <img src="movie_posters/w03EiJVHP8Un77boQeE7hg9DVdU.jpg" alt="Singin' in the Rain Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Singin' in the Rain">Singin' in the Rain</h3>
+            <p class="year-rating">
+                <span class="year">1952</span> | <span class="rating">★ 8.3</span>
+            </p>
+            <p class="votes">272,324 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0053604/" target="_blank" class="poster-link">
+            <img src="movie_posters/hhSRt1KKfRT0yEhEtRW3qp31JFU.jpg" alt="The Apartment Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Apartment">The Apartment</h3>
+            <p class="year-rating">
+                <span class="year">1960</span> | <span class="rating">★ 8.3</span>
+            </p>
+            <p class="votes">208,710 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0119217/" target="_blank" class="poster-link">
+            <img src="movie_posters/z2FnLKpFi1HPO7BEJxdkv6hpJSU.jpg" alt="Good Will Hunting Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Good Will Hunting">Good Will Hunting</h3>
+            <p class="year-rating">
+                <span class="year">1997</span> | <span class="rating">★ 8.3</span>
+            </p>
+            <p class="votes">1,136,194 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0211915/" target="_blank" class="poster-link">
+            <img src="movie_posters/oTKduWL2tpIKEmkAqF4mFEAWAsv.jpg" alt="Amélie Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Amélie">Amélie</h3>
+            <p class="year-rating">
+                <span class="year">2001</span> | <span class="rating">★ 8.3</span>
+            </p>
+            <p class="votes">818,016 votes</p>
+        </div>
+    </div>
+    
+        </div>
+    </section>
+    
+    <section class="genre-section" id="genre-thriller">
+        <h2 class="genre-title">Thriller</h2>
+        <div class="movies-container">
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt5354160/" target="_blank" class="poster-link">
+            <img src="movie_posters/1Cz5Q7PH2JklNV7OzMkTenPGrEf.jpg" alt="Mirror Game Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Mirror Game">Mirror Game</h3>
+            <p class="year-rating">
+                <span class="year">2016</span> | <span class="rating">★ 8.9</span>
+            </p>
+            <p class="votes">30,451 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0137523/" target="_blank" class="poster-link">
+            <img src="movie_posters/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg" alt="Fight Club Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Fight Club">Fight Club</h3>
+            <p class="year-rating">
+                <span class="year">1999</span> | <span class="rating">★ 8.8</span>
+            </p>
+            <p class="votes">2,461,562 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0047396/" target="_blank" class="poster-link">
+            <img src="movie_posters/ILVF0eJxHMddjxeQhswFtpMtqx.jpg" alt="Rear Window Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Rear Window">Rear Window</h3>
+            <p class="year-rating">
+                <span class="year">1954</span> | <span class="rating">★ 8.5</span>
+            </p>
+            <p class="votes">545,641 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0407887/" target="_blank" class="poster-link">
+            <img src="movie_posters/nT97ifVT2J1yMQmeq20Qblg61T.jpg" alt="The Departed Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Departed">The Departed</h3>
+            <p class="year-rating">
+                <span class="year">2006</span> | <span class="rating">★ 8.5</span>
+            </p>
+            <p class="votes">1,486,134 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt6751668/" target="_blank" class="poster-link">
+            <img src="movie_posters/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg" alt="Parasite Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Parasite">Parasite</h3>
+            <p class="year-rating">
+                <span class="year">2019</span> | <span class="rating">★ 8.5</span>
+            </p>
+            <p class="votes">1,060,243 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0209144/" target="_blank" class="poster-link">
+            <img src="movie_posters/fKTPH2WvH8nHTXeBYBVhawtRqtR.jpg" alt="Memento Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Memento">Memento</h3>
+            <p class="year-rating">
+                <span class="year">2000</span> | <span class="rating">★ 8.4</span>
+            </p>
+            <p class="votes">1,377,548 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0405094/" target="_blank" class="poster-link">
+            <img src="movie_posters/cVUDMnskSc01rdbyH0tLATTJUdP.jpg" alt="The Lives of Others Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="The Lives of Others">The Lives of Others</h3>
+            <p class="year-rating">
+                <span class="year">2006</span> | <span class="rating">★ 8.4</span>
+            </p>
+            <p class="votes">427,375 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt9900782/" target="_blank" class="poster-link">
+            <img src="movie_posters/s3VZHlvfU6Mg95Db2Q5Dkqy6gDY.jpg" alt="Kaithi Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Kaithi">Kaithi</h3>
+            <p class="year-rating">
+                <span class="year">2019</span> | <span class="rating">★ 8.4</span>
+            </p>
+            <p class="votes">46,455 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0022100/" target="_blank" class="poster-link">
+            <img src="movie_posters/bTdZk3q2DWpBRnLiaaItKFWOVhI.jpg" alt="M Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="M">M</h3>
+            <p class="year-rating">
+                <span class="year">1931</span> | <span class="rating">★ 8.3</span>
+            </p>
+            <p class="votes">176,882 votes</p>
+        </div>
+    </div>
+    
+    <div class="movie-card">
+        <a href="https://www.imdb.com/title/tt0091251/" target="_blank" class="poster-link">
+            <img src="movie_posters/qNbMsKVzigERgJUbwf8pKyZogpb.jpg" alt="Come and See Poster" loading="lazy">
+        </a>
+        <div class="movie-info">
+            <h3 title="Come and See">Come and See</h3>
+            <p class="year-rating">
+                <span class="year">1985</span> | <span class="rating">★ 8.3</span>
+            </p>
+            <p class="votes">111,561 votes</p>
+        </div>
+    </div>
+    
+        </div>
+    </section>
+    
+    <script>
+        // No dynamic JS needed for this static version
+        console.log("Static filtered movie visualization loaded.");
+    </script>
+</body>
+</html>

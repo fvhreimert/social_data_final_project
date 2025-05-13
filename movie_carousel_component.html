@@ -1,0 +1,1097 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Carousel Component</title>
+    <style>
+        /* Component Container - aiming for ~16:9 */
+        #movie-carousel-component {
+            --component-width: clamp(300px, 90vw, 800px); /* Responsive width */
+            width: var(--component-width);
+            /* aspect-ratio: 16 / 9; */ /* Let height be determined by content for flexibility */
+            margin: 20px auto; /* Center component */
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden; /* Important for containing elements */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            position: relative; /* Needed for absolute positioning of nav buttons */
+            box-sizing: border-box;
+        }
+
+        /* Genre Selector */
+        .carousel-controls {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        #genre-selector {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+        }
+
+        /* Carousel Area */
+        .carousel-viewport {
+            width: 100%;
+            overflow: hidden; /* Crucial: Hides slides outside the viewport */
+            position: relative; /* Reference for absolutely positioned buttons */
+             border-radius: 8px; /* Match component rounding */
+             background-color: #e0e0e0; /* Background if needed */
+        }
+
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s ease-in-out; /* Smooth sliding animation */
+            will-change: transform; /* Hint for performance */
+        }
+
+        /* Individual Slide Styling */
+        .carousel-slide {
+            flex: 0 0 100%; /* Each slide takes full width of viewport */
+            box-sizing: border-box;
+            padding: 0 5px; /* Small gap between slides if needed */
+            position: relative; /* For overlaying info */
+             aspect-ratio: 16 / 9; /* Enforce aspect ratio for the slide area */
+             display: flex; /* Use flexbox for content alignment */
+             align-items: center; /* Vertically center content */
+             justify-content: center; /* Horizontally center content */
+             overflow: hidden; /* Ensure content stays within slide */
+        }
+
+         .carousel-slide img {
+            display: block;
+            /* Make image cover the slide area while maintaining aspect ratio */
+            width: auto; /* Let width adjust */
+            height: 100%; /* Fill height */
+            max-width: 100%; /* Don't exceed slide width */
+            object-fit: contain; /* Show whole image, letterbox if needed */
+            border-radius: 5px; /* Slightly rounded corners */
+            background-color: #333; /* Dark bg for transparent parts */
+         }
+
+        /* Basic Movie Info Overlay (Optional) */
+        .slide-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0)); /* Gradient background */
+            color: white;
+            padding: 25px 10px 10px 10px; /* Top padding for gradient */
+            font-size: 0.9em;
+            text-align: center;
+            opacity: 0; /* Hidden by default */
+            transition: opacity 0.3s ease;
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+        }
+         .carousel-slide:hover .slide-info {
+            opacity: 1; /* Show on hover */
+         }
+         .slide-info h4 { margin: 0 0 3px 0; font-size: 1.1em; font-weight: 600;}
+         .slide-info p { margin: 0; font-size: 0.85em; }
+
+
+        /* Navigation Buttons */
+        .carousel-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease;
+        }
+        .carousel-button:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        .carousel-button:disabled {
+            background-color: rgba(0, 0, 0, 0.2);
+            cursor: default;
+        }
+        .carousel-button.prev {
+            left: 10px; /* Position left button */
+        }
+        .carousel-button.next {
+            right: 10px; /* Position right button */
+        }
+
+        /* Hide buttons if only one slide */
+        .carousel-viewport[data-slides-count="1"] .carousel-button {
+             display: none;
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <!-- The main component container -->
+    <div id="movie-carousel-component">
+        <div class="carousel-controls">
+            <label for="genre-selector">Select Genre: </label>
+            <select id="genre-selector"></select>
+        </div>
+
+        <div class="carousel-viewport">
+            <!-- Carousel Track: Slides will be added here by JS -->
+            <div class="carousel-track"></div>
+
+            <!-- Navigation Buttons -->
+            <button class="carousel-button prev" aria-label="Previous slide" disabled>❮</button>
+            <button class="carousel-button next" aria-label="Next slide" disabled>❯</button>
+        </div>
+    </div>
+
+    <!-- Embed the movie data as JSON -->
+    <script id="movie-data" type="application/json">
+        {
+  "Action": [
+    {
+      "title": "The Dark Knight",
+      "year": 2008,
+      "rating": 9.0,
+      "votes": "3,016,995",
+      "imdbId": "tt0468569",
+      "posterPath": "movie_posters/qJ2tW6WMUDux911r6m7haRef0WH.jpg"
+    },
+    {
+      "title": "Inception",
+      "year": 2010,
+      "rating": 8.8,
+      "votes": "2,679,961",
+      "imdbId": "tt1375666",
+      "posterPath": "movie_posters/ljsZTbVsrQSqZgWeep2B1QiDKuh.jpg"
+    },
+    {
+      "title": "The Matrix",
+      "year": 1999,
+      "rating": 8.7,
+      "votes": "2,153,140",
+      "imdbId": "tt0133093",
+      "posterPath": "movie_posters/dXNAPwY7VrqMAo51EKhhCJfaGb5.jpg"
+    },
+    {
+      "title": "Star Wars: Episode V - The Empire Strikes Back",
+      "year": 1980,
+      "rating": 8.7,
+      "votes": "1,439,551",
+      "imdbId": "tt0080684",
+      "posterPath": "movie_posters/nNAeTmF4CtdSgMDplXTDPOpYzsX.jpg"
+    },
+    {
+      "title": "Star Wars: Episode IV - A New Hope",
+      "year": 1977,
+      "rating": 8.6,
+      "votes": "1,506,370",
+      "imdbId": "tt0076759",
+      "posterPath": "movie_posters/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg"
+    },
+    {
+      "title": "Terminator 2: Judgment Day",
+      "year": 1991,
+      "rating": 8.6,
+      "votes": "1,231,396",
+      "imdbId": "tt0103064",
+      "posterPath": "movie_posters/5M0j0B18abtBI5gi2RhfjjurTqb.jpg"
+    },
+    {
+      "title": "Seven Samurai",
+      "year": 1954,
+      "rating": 8.6,
+      "votes": "383,592",
+      "imdbId": "tt0047478",
+      "posterPath": "movie_posters/8OKmBV5BUFzmozIC3pPWKHy17kx.jpg"
+    },
+    {
+      "title": "Gladiator",
+      "year": 2000,
+      "rating": 8.5,
+      "votes": "1,757,208",
+      "imdbId": "tt0172495",
+      "posterPath": "movie_posters/ty8TGRuvJLPUmAR1H1nRIsgwvim.jpg"
+    },
+    {
+      "title": "L\u00e9on: The Professional",
+      "year": 1994,
+      "rating": 8.5,
+      "votes": "1,301,480",
+      "imdbId": "tt0110413",
+      "posterPath": "movie_posters/yI6X2cCM5YPJtxMhUd3dPGqDAhw.jpg"
+    },
+    {
+      "title": "Dune: Part Two",
+      "year": 2024,
+      "rating": 8.5,
+      "votes": "627,879",
+      "imdbId": "tt15239678",
+      "posterPath": "movie_posters/6izwz7rsy95ARzTR3poZ8H6c5pp.jpg"
+    }
+  ],
+  "Adventure": [
+    {
+      "title": "The Lord of the Rings: The Return of the King",
+      "year": 2003,
+      "rating": 9.0,
+      "votes": "2,075,645",
+      "imdbId": "tt0167260",
+      "posterPath": "movie_posters/rCzpDGLbOoPwLjy3OAm5NUPOTrC.jpg"
+    },
+    {
+      "title": "The Lord of the Rings: The Fellowship of the Ring",
+      "year": 2001,
+      "rating": 8.9,
+      "votes": "2,105,491",
+      "imdbId": "tt0120737",
+      "posterPath": "movie_posters/6oom5QYQ2yQTMJIbnvbkBL9cHo6.jpg"
+    },
+    {
+      "title": "Inception",
+      "year": 2010,
+      "rating": 8.8,
+      "votes": "2,679,961",
+      "imdbId": "tt1375666",
+      "posterPath": "movie_posters/ljsZTbVsrQSqZgWeep2B1QiDKuh.jpg"
+    },
+    {
+      "title": "The Lord of the Rings: The Two Towers",
+      "year": 2002,
+      "rating": 8.8,
+      "votes": "1,871,433",
+      "imdbId": "tt0167261",
+      "posterPath": "movie_posters/5VTN0pR8gcqV3EPUHHfMGnJYN9L.jpg"
+    },
+    {
+      "title": "The Good, the Bad and the Ugly",
+      "year": 1966,
+      "rating": 8.8,
+      "votes": "852,036",
+      "imdbId": "tt0060196",
+      "posterPath": "movie_posters/bX2xnavhMYjWDoZp1VM6VnU1xwe.jpg"
+    },
+    {
+      "title": "Interstellar",
+      "year": 2014,
+      "rating": 8.7,
+      "votes": "2,340,745",
+      "imdbId": "tt0816692",
+      "posterPath": "movie_posters/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg"
+    },
+    {
+      "title": "Star Wars: Episode V - The Empire Strikes Back",
+      "year": 1980,
+      "rating": 8.7,
+      "votes": "1,439,551",
+      "imdbId": "tt0080684",
+      "posterPath": "movie_posters/nNAeTmF4CtdSgMDplXTDPOpYzsX.jpg"
+    },
+    {
+      "title": "777 Charlie",
+      "year": 2022,
+      "rating": 8.7,
+      "votes": "43,099",
+      "imdbId": "tt7466810",
+      "posterPath": "movie_posters/qArPmXH0aWsT3SEtYl8XrU2Oz48.jpg"
+    },
+    {
+      "title": "Star Wars: Episode IV - A New Hope",
+      "year": 1977,
+      "rating": 8.6,
+      "votes": "1,506,370",
+      "imdbId": "tt0076759",
+      "posterPath": "movie_posters/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg"
+    },
+    {
+      "title": "Terminator 2: Judgment Day",
+      "year": 1991,
+      "rating": 8.6,
+      "votes": "1,231,396",
+      "imdbId": "tt0103064",
+      "posterPath": "movie_posters/5M0j0B18abtBI5gi2RhfjjurTqb.jpg"
+    }
+  ],
+  "Comedy": [
+    {
+      "title": "The Chaos Class",
+      "year": 1975,
+      "rating": 9.2,
+      "votes": "44,445",
+      "imdbId": "tt0252487",
+      "posterPath": "movie_posters/t2xLuEeZhy4uyiWIFT9D4mmyEA8.jpg"
+    },
+    {
+      "title": "777 Charlie",
+      "year": 2022,
+      "rating": 8.7,
+      "votes": "43,099",
+      "imdbId": "tt7466810",
+      "posterPath": "movie_posters/qArPmXH0aWsT3SEtYl8XrU2Oz48.jpg"
+    },
+    {
+      "title": "Life Is Beautiful",
+      "year": 1997,
+      "rating": 8.6,
+      "votes": "777,414",
+      "imdbId": "tt0118799",
+      "posterPath": "movie_posters/74hLDKjD5aGYOotO6esUVaeISa2.jpg"
+    },
+    {
+      "title": "Back to the Future",
+      "year": 1985,
+      "rating": 8.5,
+      "votes": "1,376,010",
+      "imdbId": "tt0088763",
+      "posterPath": "movie_posters/vN5B5WgYscRGcQpVhHl6p9DDTP0.jpg"
+    },
+    {
+      "title": "The Intouchables",
+      "year": 2011,
+      "rating": 8.5,
+      "votes": "977,132",
+      "imdbId": "tt1675434",
+      "posterPath": "movie_posters/1QU7HKgsQbGpzsJbJK4pAVQV9F5.jpg"
+    },
+    {
+      "title": "Modern Times",
+      "year": 1936,
+      "rating": 8.5,
+      "votes": "272,647",
+      "imdbId": "tt0027977",
+      "posterPath": "movie_posters/7uoiKOEjxBBW0AgDGQWrlfGQ90w.jpg"
+    },
+    {
+      "title": "City Lights",
+      "year": 1931,
+      "rating": 8.5,
+      "votes": "206,785",
+      "imdbId": "tt0021749",
+      "posterPath": "movie_posters/ugmakEL5y294I5bXgiBqApuZpwc.jpg"
+    },
+    {
+      "title": "3 Idiots",
+      "year": 2009,
+      "rating": 8.4,
+      "votes": "457,959",
+      "imdbId": "tt1187043",
+      "posterPath": "movie_posters/66A9MqXOyVFCssoloscw79z8Tew.jpg"
+    },
+    {
+      "title": "The Great Dictator",
+      "year": 1940,
+      "rating": 8.4,
+      "votes": "248,579",
+      "imdbId": "tt0032553",
+      "posterPath": "movie_posters/nhMXB8GTdswYMCL9nepDZymJCOr.jpg"
+    },
+    {
+      "title": "Toy Story",
+      "year": 1995,
+      "rating": 8.3,
+      "votes": "1,121,376",
+      "imdbId": "tt0114709",
+      "posterPath": "movie_posters/uXDfjJbdP4ijW5hWSBrPrlKpxab.jpg"
+    }
+  ],
+  "Crime": [
+    {
+      "title": "The Godfather",
+      "year": 1972,
+      "rating": 9.2,
+      "votes": "2,122,163",
+      "imdbId": "tt0068646",
+      "posterPath": "movie_posters/3bhkrj58Vtu7enYsRolD1fZdja1.jpg"
+    },
+    {
+      "title": "The Dark Knight",
+      "year": 2008,
+      "rating": 9.0,
+      "votes": "3,016,995",
+      "imdbId": "tt0468569",
+      "posterPath": "movie_posters/qJ2tW6WMUDux911r6m7haRef0WH.jpg"
+    },
+    {
+      "title": "The Godfather Part II",
+      "year": 1974,
+      "rating": 9.0,
+      "votes": "1,427,702",
+      "imdbId": "tt0071562",
+      "posterPath": "movie_posters/hek3koDUyRQk7FIhPXsa6mT2Zc3.jpg"
+    },
+    {
+      "title": "12 Angry Men",
+      "year": 1957,
+      "rating": 9.0,
+      "votes": "923,749",
+      "imdbId": "tt0050083",
+      "posterPath": "movie_posters/ow3wq89wM8qd5X7hWKxiRfsFf9C.jpg"
+    },
+    {
+      "title": "Pulp Fiction",
+      "year": 1994,
+      "rating": 8.9,
+      "votes": "2,332,241",
+      "imdbId": "tt0110912",
+      "posterPath": "movie_posters/vQWk5YBFWF4bZaofAbv0tShwBvQ.jpg"
+    },
+    {
+      "title": "Mirror Game",
+      "year": 2016,
+      "rating": 8.9,
+      "votes": "30,451",
+      "imdbId": "tt5354160",
+      "posterPath": "movie_posters/1Cz5Q7PH2JklNV7OzMkTenPGrEf.jpg"
+    },
+    {
+      "title": "Fight Club",
+      "year": 1999,
+      "rating": 8.8,
+      "votes": "2,461,562",
+      "imdbId": "tt0137523",
+      "posterPath": "movie_posters/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg"
+    },
+    {
+      "title": "Goodfellas",
+      "year": 1990,
+      "rating": 8.7,
+      "votes": "1,324,048",
+      "imdbId": "tt0099685",
+      "posterPath": "movie_posters/aKuFiU82s5ISJpGZp7YkIr3kCUd.jpg"
+    },
+    {
+      "title": "Jai Bhim",
+      "year": 2021,
+      "rating": 8.7,
+      "votes": "225,426",
+      "imdbId": "tt15097216",
+      "posterPath": "movie_posters/ehybiOtBUtrMkmtB39zQEtq1Jie.jpg"
+    },
+    {
+      "title": "Se7en",
+      "year": 1995,
+      "rating": 8.6,
+      "votes": "1,908,640",
+      "imdbId": "tt0114369",
+      "posterPath": "movie_posters/191nKfP0ehp3uIvWqgPbFmI4lv9.jpg"
+    }
+  ],
+  "Documentary": [
+    {
+      "title": "Senna",
+      "year": 2010,
+      "rating": 8.5,
+      "votes": "80,591",
+      "imdbId": "tt1424432",
+      "posterPath": "movie_posters/nZbLCbRoP6iJq5sr8daHQzjnzFh.jpg"
+    },
+    {
+      "title": "Dear Zachary: A Letter to a Son About His Father",
+      "year": 2008,
+      "rating": 8.5,
+      "votes": "43,138",
+      "imdbId": "tt1152758",
+      "posterPath": "movie_posters/bVJCQfIfNC01CYOVkvBOtrY1cxy.jpg"
+    },
+    {
+      "title": "Baraka",
+      "year": 1992,
+      "rating": 8.5,
+      "votes": "42,091",
+      "imdbId": "tt0103767",
+      "posterPath": "movie_posters/ldEuJQ4z7zEvL7iXraESWBUfQcz.jpg"
+    },
+    {
+      "title": "The Cove",
+      "year": 2009,
+      "rating": 8.4,
+      "votes": "52,329",
+      "imdbId": "tt1313104",
+      "posterPath": "movie_posters/miodcVtQv2YxpKjjHJWcV0EDfSP.jpg"
+    },
+    {
+      "title": "Samsara",
+      "year": 2011,
+      "rating": 8.4,
+      "votes": "39,029",
+      "imdbId": "tt0770802",
+      "posterPath": "movie_posters/qodkea4k0pNUmNTl5TJO2PdTqgW.jpg"
+    },
+    {
+      "title": "Inside Job",
+      "year": 2010,
+      "rating": 8.2,
+      "votes": "81,212",
+      "imdbId": "tt1645089",
+      "posterPath": "movie_posters/7yXXIWec24htucjsZS1sDuPLqw8.jpg"
+    },
+    {
+      "title": "Searching for Sugar Man",
+      "year": 2012,
+      "rating": 8.2,
+      "votes": "74,714",
+      "imdbId": "tt2125608",
+      "posterPath": "movie_posters/ucM98HuBHSWmn44oiE83hIDc6VB.jpg"
+    },
+    {
+      "title": "The Act of Killing",
+      "year": 2012,
+      "rating": 8.2,
+      "votes": "42,357",
+      "imdbId": "tt2375605",
+      "posterPath": "movie_posters/sp5B7Tz5ttsgOLnIlCP5uEhtesI.jpg"
+    },
+    {
+      "title": "They Shall Not Grow Old",
+      "year": 2018,
+      "rating": 8.2,
+      "votes": "39,671",
+      "imdbId": "tt7905466",
+      "posterPath": "movie_posters/yMGfJeTXUdIjOqjS0jJfjgYEuYC.jpg"
+    },
+    {
+      "title": "13th",
+      "year": 2016,
+      "rating": 8.2,
+      "votes": "38,519",
+      "imdbId": "tt5895028",
+      "posterPath": "movie_posters/tcKNWD6IFPPsvkpvyZ548naz0is.jpg"
+    }
+  ],
+  "Drama": [
+    {
+      "title": "The Shawshank Redemption",
+      "year": 1994,
+      "rating": 9.3,
+      "votes": "3,040,199",
+      "imdbId": "tt0111161",
+      "posterPath": "movie_posters/9cqNxx0GxF0bflZmeSMuL5tnGzr.jpg"
+    },
+    {
+      "title": "The Godfather",
+      "year": 1972,
+      "rating": 9.2,
+      "votes": "2,122,163",
+      "imdbId": "tt0068646",
+      "posterPath": "movie_posters/3bhkrj58Vtu7enYsRolD1fZdja1.jpg"
+    },
+    {
+      "title": "The Dark Knight",
+      "year": 2008,
+      "rating": 9.0,
+      "votes": "3,016,995",
+      "imdbId": "tt0468569",
+      "posterPath": "movie_posters/qJ2tW6WMUDux911r6m7haRef0WH.jpg"
+    },
+    {
+      "title": "The Lord of the Rings: The Return of the King",
+      "year": 2003,
+      "rating": 9.0,
+      "votes": "2,075,645",
+      "imdbId": "tt0167260",
+      "posterPath": "movie_posters/rCzpDGLbOoPwLjy3OAm5NUPOTrC.jpg"
+    },
+    {
+      "title": "Schindler's List",
+      "year": 1993,
+      "rating": 9.0,
+      "votes": "1,520,746",
+      "imdbId": "tt0108052",
+      "posterPath": "movie_posters/sF1U4EUQS8YHUYjNl3pMGNIQyr0.jpg"
+    },
+    {
+      "title": "The Godfather Part II",
+      "year": 1974,
+      "rating": 9.0,
+      "votes": "1,427,702",
+      "imdbId": "tt0071562",
+      "posterPath": "movie_posters/hek3koDUyRQk7FIhPXsa6mT2Zc3.jpg"
+    },
+    {
+      "title": "12 Angry Men",
+      "year": 1957,
+      "rating": 9.0,
+      "votes": "923,749",
+      "imdbId": "tt0050083",
+      "posterPath": "movie_posters/ow3wq89wM8qd5X7hWKxiRfsFf9C.jpg"
+    },
+    {
+      "title": "Pulp Fiction",
+      "year": 1994,
+      "rating": 8.9,
+      "votes": "2,332,241",
+      "imdbId": "tt0110912",
+      "posterPath": "movie_posters/vQWk5YBFWF4bZaofAbv0tShwBvQ.jpg"
+    },
+    {
+      "title": "The Lord of the Rings: The Fellowship of the Ring",
+      "year": 2001,
+      "rating": 8.9,
+      "votes": "2,105,491",
+      "imdbId": "tt0120737",
+      "posterPath": "movie_posters/6oom5QYQ2yQTMJIbnvbkBL9cHo6.jpg"
+    },
+    {
+      "title": "Fight Club",
+      "year": 1999,
+      "rating": 8.8,
+      "votes": "2,461,562",
+      "imdbId": "tt0137523",
+      "posterPath": "movie_posters/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg"
+    }
+  ],
+  "Horror": [
+    {
+      "title": "The Silence of the Lambs",
+      "year": 1991,
+      "rating": 8.6,
+      "votes": "1,633,094",
+      "imdbId": "tt0102926",
+      "posterPath": "movie_posters/uS9m8OBk1A8eM9I042bx8XXpqAq.jpg"
+    },
+    {
+      "title": "Alien",
+      "year": 1979,
+      "rating": 8.5,
+      "votes": "1,014,865",
+      "imdbId": "tt0078748",
+      "posterPath": "movie_posters/vfrQk5IPloGg1v9Rzbh2Eg3VGyM.jpg"
+    },
+    {
+      "title": "Psycho",
+      "year": 1960,
+      "rating": 8.5,
+      "votes": "751,809",
+      "imdbId": "tt0054215",
+      "posterPath": "movie_posters/yz4QVqPx3h1hD1DfqqQkCq3rmxW.jpg"
+    },
+    {
+      "title": "The Shining",
+      "year": 1980,
+      "rating": 8.4,
+      "votes": "1,165,413",
+      "imdbId": "tt0081505",
+      "posterPath": "movie_posters/xazWoLealQwEgqZ89MLZklLZD3k.jpg"
+    },
+    {
+      "title": "Aliens",
+      "year": 1986,
+      "rating": 8.4,
+      "votes": "808,077",
+      "imdbId": "tt0090605",
+      "posterPath": "movie_posters/r1x5JGpyqZU8PYhbs4UcrO1Xb6x.jpg"
+    },
+    {
+      "title": "The Thing",
+      "year": 1982,
+      "rating": 8.2,
+      "votes": "497,866",
+      "imdbId": "tt0084787",
+      "posterPath": "movie_posters/tzGY49kseSE9QAKk47uuDGwnSCu.jpg"
+    },
+    {
+      "title": "Tumbbad",
+      "year": 2018,
+      "rating": 8.2,
+      "votes": "68,182",
+      "imdbId": "tt8239946",
+      "posterPath": "movie_posters/6qeRFImDskoIRkSCFatqeM2rM3k.jpg"
+    },
+    {
+      "title": "Jaws",
+      "year": 1975,
+      "rating": 8.1,
+      "votes": "693,632",
+      "imdbId": "tt0073195",
+      "posterPath": "movie_posters/lxM6kqilAdpdhqUl2biYp5frUxE.jpg"
+    },
+    {
+      "title": "The Exorcist",
+      "year": 1973,
+      "rating": 8.1,
+      "votes": "477,285",
+      "imdbId": "tt0070047",
+      "posterPath": "movie_posters/5x0CeVHJI8tcDx8tUUwYHQSNILq.jpg"
+    },
+    {
+      "title": "Sinners",
+      "year": 2025,
+      "rating": 8.1,
+      "votes": "77,149",
+      "imdbId": "tt31193180",
+      "posterPath": "movie_posters/jYfMTSiFFK7ffbY2lay4zyvTkEk.jpg"
+    }
+  ],
+  "Mystery": [
+    {
+      "title": "Mirror Game",
+      "year": 2016,
+      "rating": 8.9,
+      "votes": "30,451",
+      "imdbId": "tt5354160",
+      "posterPath": "movie_posters/1Cz5Q7PH2JklNV7OzMkTenPGrEf.jpg"
+    },
+    {
+      "title": "Se7en",
+      "year": 1995,
+      "rating": 8.6,
+      "votes": "1,908,640",
+      "imdbId": "tt0114369",
+      "posterPath": "movie_posters/191nKfP0ehp3uIvWqgPbFmI4lv9.jpg"
+    },
+    {
+      "title": "Harakiri",
+      "year": 1962,
+      "rating": 8.6,
+      "votes": "79,417",
+      "imdbId": "tt0056058",
+      "posterPath": "movie_posters/5konZnIbcAxZjP616Cz5o9bKEfW.jpg"
+    },
+    {
+      "title": "The Prestige",
+      "year": 2006,
+      "rating": 8.5,
+      "votes": "1,512,950",
+      "imdbId": "tt0482571",
+      "posterPath": "movie_posters/bdN3gXuIZYaJP7ftKK2sU0nPtEA.jpg"
+    },
+    {
+      "title": "The Usual Suspects",
+      "year": 1995,
+      "rating": 8.5,
+      "votes": "1,188,740",
+      "imdbId": "tt0114814",
+      "posterPath": "movie_posters/rWbsxdwF9qQzpTPCLmDfVnVqTK1.jpg"
+    },
+    {
+      "title": "Psycho",
+      "year": 1960,
+      "rating": 8.5,
+      "votes": "751,809",
+      "imdbId": "tt0054215",
+      "posterPath": "movie_posters/yz4QVqPx3h1hD1DfqqQkCq3rmxW.jpg"
+    },
+    {
+      "title": "Rear Window",
+      "year": 1954,
+      "rating": 8.5,
+      "votes": "545,641",
+      "imdbId": "tt0047396",
+      "posterPath": "movie_posters/ILVF0eJxHMddjxeQhswFtpMtqx.jpg"
+    },
+    {
+      "title": "Sita Ramam",
+      "year": 2022,
+      "rating": 8.5,
+      "votes": "75,354",
+      "imdbId": "tt20850406",
+      "posterPath": "movie_posters/g3hk2wEeIsTGhh7JvK8yWFVR7ue.jpg"
+    },
+    {
+      "title": "Memento",
+      "year": 2000,
+      "rating": 8.4,
+      "votes": "1,377,548",
+      "imdbId": "tt0209144",
+      "posterPath": "movie_posters/fKTPH2WvH8nHTXeBYBVhawtRqtR.jpg"
+    },
+    {
+      "title": "Apocalypse Now",
+      "year": 1979,
+      "rating": 8.4,
+      "votes": "741,481",
+      "imdbId": "tt0078788",
+      "posterPath": "movie_posters/gQB8Y5RCMkv2zwzFHbUJX3kAhvA.jpg"
+    }
+  ],
+  "Romance": [
+    {
+      "title": "Forrest Gump",
+      "year": 1994,
+      "rating": 8.8,
+      "votes": "2,376,341",
+      "imdbId": "tt0109830",
+      "posterPath": "movie_posters/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg"
+    },
+    {
+      "title": "Life Is Beautiful",
+      "year": 1997,
+      "rating": 8.6,
+      "votes": "777,414",
+      "imdbId": "tt0118799",
+      "posterPath": "movie_posters/74hLDKjD5aGYOotO6esUVaeISa2.jpg"
+    },
+    {
+      "title": "Cinema Paradiso",
+      "year": 1988,
+      "rating": 8.5,
+      "votes": "300,956",
+      "imdbId": "tt0095765",
+      "posterPath": "movie_posters/gCI2AeMV4IHSewhJkzsur5MEp6R.jpg"
+    },
+    {
+      "title": "Modern Times",
+      "year": 1936,
+      "rating": 8.5,
+      "votes": "272,647",
+      "imdbId": "tt0027977",
+      "posterPath": "movie_posters/7uoiKOEjxBBW0AgDGQWrlfGQ90w.jpg"
+    },
+    {
+      "title": "City Lights",
+      "year": 1931,
+      "rating": 8.5,
+      "votes": "206,785",
+      "imdbId": "tt0021749",
+      "posterPath": "movie_posters/ugmakEL5y294I5bXgiBqApuZpwc.jpg"
+    },
+    {
+      "title": "96",
+      "year": 2018,
+      "rating": 8.5,
+      "votes": "41,250",
+      "imdbId": "tt7019842",
+      "posterPath": "movie_posters/nrVloCa2hCFOztRF1DZU2jnWIiQ.jpg"
+    },
+    {
+      "title": "Good Will Hunting",
+      "year": 1997,
+      "rating": 8.3,
+      "votes": "1,136,194",
+      "imdbId": "tt0119217",
+      "posterPath": "movie_posters/z2FnLKpFi1HPO7BEJxdkv6hpJSU.jpg"
+    },
+    {
+      "title": "Eternal Sunshine of the Spotless Mind",
+      "year": 2004,
+      "rating": 8.3,
+      "votes": "1,135,367",
+      "imdbId": "tt0338013",
+      "posterPath": "movie_posters/5MwkWH9tYHv3mV9OdYTMR5qreIz.jpg"
+    },
+    {
+      "title": "Am\u00e9lie",
+      "year": 2001,
+      "rating": 8.3,
+      "votes": "818,016",
+      "imdbId": "tt0211915",
+      "posterPath": "movie_posters/oTKduWL2tpIKEmkAqF4mFEAWAsv.jpg"
+    },
+    {
+      "title": "Singin' in the Rain",
+      "year": 1952,
+      "rating": 8.3,
+      "votes": "272,324",
+      "imdbId": "tt0045152",
+      "posterPath": "movie_posters/w03EiJVHP8Un77boQeE7hg9DVdU.jpg"
+    }
+  ],
+  "Thriller": [
+    {
+      "title": "Mirror Game",
+      "year": 2016,
+      "rating": 8.9,
+      "votes": "30,451",
+      "imdbId": "tt5354160",
+      "posterPath": "movie_posters/1Cz5Q7PH2JklNV7OzMkTenPGrEf.jpg"
+    },
+    {
+      "title": "Fight Club",
+      "year": 1999,
+      "rating": 8.8,
+      "votes": "2,461,562",
+      "imdbId": "tt0137523",
+      "posterPath": "movie_posters/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg"
+    },
+    {
+      "title": "The Departed",
+      "year": 2006,
+      "rating": 8.5,
+      "votes": "1,486,134",
+      "imdbId": "tt0407887",
+      "posterPath": "movie_posters/nT97ifVT2J1yMQmeq20Qblg61T.jpg"
+    },
+    {
+      "title": "Parasite",
+      "year": 2019,
+      "rating": 8.5,
+      "votes": "1,060,243",
+      "imdbId": "tt6751668",
+      "posterPath": "movie_posters/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg"
+    },
+    {
+      "title": "Rear Window",
+      "year": 1954,
+      "rating": 8.5,
+      "votes": "545,641",
+      "imdbId": "tt0047396",
+      "posterPath": "movie_posters/ILVF0eJxHMddjxeQhswFtpMtqx.jpg"
+    },
+    {
+      "title": "Memento",
+      "year": 2000,
+      "rating": 8.4,
+      "votes": "1,377,548",
+      "imdbId": "tt0209144",
+      "posterPath": "movie_posters/fKTPH2WvH8nHTXeBYBVhawtRqtR.jpg"
+    },
+    {
+      "title": "The Lives of Others",
+      "year": 2006,
+      "rating": 8.4,
+      "votes": "427,375",
+      "imdbId": "tt0405094",
+      "posterPath": "movie_posters/cVUDMnskSc01rdbyH0tLATTJUdP.jpg"
+    },
+    {
+      "title": "Kaithi",
+      "year": 2019,
+      "rating": 8.4,
+      "votes": "46,455",
+      "imdbId": "tt9900782",
+      "posterPath": "movie_posters/s3VZHlvfU6Mg95Db2Q5Dkqy6gDY.jpg"
+    },
+    {
+      "title": "Joker",
+      "year": 2019,
+      "rating": 8.3,
+      "votes": "1,606,894",
+      "imdbId": "tt7286456",
+      "posterPath": "movie_posters/udDclJoHjfjb8Ekgsd4FDteOkCU.jpg"
+    },
+    {
+      "title": "Reservoir Dogs",
+      "year": 1992,
+      "rating": 8.3,
+      "votes": "1,131,521",
+      "imdbId": "tt0105236",
+      "posterPath": "movie_posters/xi8Iu6qyTfyZVDVy60raIOYJJmk.jpg"
+    }
+  ]
+}
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const movieData = JSON.parse(document.getElementById('movie-data').textContent);
+            const genreSelector = document.getElementById('genre-selector');
+            const carouselTrack = document.querySelector('.carousel-track');
+            const carouselViewport = document.querySelector('.carousel-viewport');
+            const prevButton = document.querySelector('.carousel-button.prev');
+            const nextButton = document.querySelector('.carousel-button.next');
+
+            let currentGenre = '';
+            let currentSlideIndex = 0;
+            let totalSlides = 0;
+
+            // --- Populate Genre Selector ---
+            const genres = Object.keys(movieData).sort();
+            genres.forEach(genre => {
+                const option = document.createElement('option');
+                option.value = genre;
+                option.textContent = genre;
+                genreSelector.appendChild(option);
+            });
+
+            // --- Function to Build Carousel for a Genre ---
+            function buildCarousel(genre) {
+                const movies = movieData[genre] || [];
+                totalSlides = movies.length;
+                currentSlideIndex = 0;
+                carouselTrack.innerHTML = ''; // Clear previous slides
+                carouselTrack.style.transform = 'translateX(0%)'; // Reset position
+
+                if (totalSlides === 0) {
+                    carouselTrack.innerHTML = '<div class="carousel-slide" style="justify-content: center; text-align: center; color: #555;">No movies found for this genre.</div>';
+                     carouselViewport.dataset.slidesCount = 0; // Custom attribute
+                } else {
+                     carouselViewport.dataset.slidesCount = totalSlides;
+                     movies.forEach(movie => { // 'movie' is a JS variable here
+                        const slide = document.createElement('div');
+                        slide.className = 'carousel-slide';
+
+                        // Define imdbLink as a JS variable *inside* the loop
+                        const imdbLink = movie.imdbId ? `https://www.imdb.com/title/${movie.imdbId}/` : '#';
+
+                        // CORRECTED SECTION: Use $\{...} to escape JS template literals within Python f-string
+                        slide.innerHTML = `
+                            <a href="$\{imdbLink}" target="_blank" style="display: contents;">
+                                <img src="$\{movie.posterPath}" alt="$\{movie.title} Poster" loading="lazy" onerror="this.style.display='none'; this.parentElement.innerHTML += '<div style=\'color:#888;\'>Poster Error</div>';">
+                                <div class="slide-info">
+                                    <h4>$\{movie.title} ($\{movie.year || 'N/A'})</h4>
+                                    <p>★ $\{movie.rating ? movie.rating.toFixed(1) : 'N/A'} | $\{movie.votes}</p>
+                                </div>
+                            </a>
+                        `;
+                        // END CORRECTED SECTION
+
+                        carouselTrack.appendChild(slide);
+                    });
+                }
+                updateNavButtons();
+            }
+
+            // --- Function to Update Navigation Button States ---
+            function updateNavButtons() {
+                prevButton.disabled = currentSlideIndex === 0;
+                nextButton.disabled = currentSlideIndex >= totalSlides - 1;
+
+                 // Special case: hide if only 0 or 1 slide
+                 if (totalSlides <= 1) {
+                    prevButton.style.display = 'none';
+                    nextButton.style.display = 'none';
+                } else {
+                     prevButton.style.display = 'flex'; // Use flex to align icon
+                    nextButton.style.display = 'flex';
+                 }
+            }
+
+            // --- Event Listeners ---
+            genreSelector.addEventListener('change', (e) => {
+                currentGenre = e.target.value;
+                buildCarousel(currentGenre);
+            });
+
+            prevButton.addEventListener('click', () => {
+                if (currentSlideIndex > 0) {
+                    currentSlideIndex--;
+                    carouselTrack.style.transform = `translateX(-${currentSlideIndex * 100}%)`; // JS template literal (OK here, outside Python f-string generation)
+                    updateNavButtons();
+                }
+            });
+
+            nextButton.addEventListener('click', () => {
+                if (currentSlideIndex < totalSlides - 1) {
+                    currentSlideIndex++;
+                    carouselTrack.style.transform = `translateX(-${currentSlideIndex * 100}%)`; // JS template literal (OK here, outside Python f-string generation)
+                    updateNavButtons();
+                }
+            });
+
+            // --- Initial Load ---
+            if (genres.length > 0) {
+                currentGenre = genres[0]; // Select the first genre initially
+                genreSelector.value = currentGenre;
+                buildCarousel(currentGenre);
+            } else {
+                // Handle case where no genres have data
+                 carouselTrack.innerHTML = '<div class="carousel-slide" style="justify-content: center; text-align: center; color: #555;">No movie data available.</div>';
+                 carouselViewport.dataset.slidesCount = 0;
+                 updateNavButtons(); // Ensure buttons are hidden/disabled
+            }
+        });
+    </script>
+
+</body>
+</html>
